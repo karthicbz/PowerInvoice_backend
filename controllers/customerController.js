@@ -4,8 +4,8 @@ const Customers = require('../models/customerModel');
 const message = require('../scripts/message');
 
 exports.all_customers_get = asynchandler(async(req, res)=>{
-    const allCustomers = await Customers.find().exec();
-    res.json(allCustomers);
+    // const allCustomers = await Customers.find().exec();
+    res.json({'message':'success'});
 });
 
 exports.customer_detail_post = [
@@ -19,11 +19,11 @@ exports.customer_detail_post = [
     .isEmail(),
     body('companyphone', 'must be a valid phone number')
     .trim()
-    .isLength({min:10})
+    .isLength({min:10, max:10})
     .escape(),
     body('companygst', 'Must be a valid GST number')
     .trim()
-    .isLength({min:15})
+    .isLength({min:15, max:15})
     .escape(),
     body('companyaddress', 'Must be a valid address')
     .trim()
@@ -40,7 +40,7 @@ exports.customer_detail_post = [
         });
 
         if(!errors.isEmpty){
-            res.json(message(errors.errors, 1)) ;
+            res.json(message(errors, 1)) ;
         }else{
             try{
                 await detail.save();

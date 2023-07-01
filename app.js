@@ -15,8 +15,12 @@ var app = express();
 const mongodb = process.env.MONGO_DB_URI;
 
 (async ()=>{
-  await mongoose.connect(mongodb);
-  console.log('successfully connected');
+  try{
+    await mongoose.connect(mongodb);
+  }catch(err){
+    console.log(err);
+  }
+  // console.log('successfully connected');
 })();
 
 // view engine setup
@@ -27,7 +31,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors);
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
