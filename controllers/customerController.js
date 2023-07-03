@@ -4,8 +4,8 @@ const Customers = require('../models/customerModel');
 const message = require('../scripts/message');
 
 exports.all_customers_get = asynchandler(async(req, res)=>{
-    // const allCustomers = await Customers.find().exec();
-    res.json({'message':'success'});
+    const allCustomers = await Customers.find().exec();
+    res.json(allCustomers);
 });
 
 exports.customer_detail_post = [
@@ -51,4 +51,14 @@ exports.customer_detail_post = [
         }
     }),
 ];
+
+exports.delete_customer_get = asynchandler(async(req, res)=>{
+    const isCustomerFound = await Customers.findById(req.params.id).exec();
+    if(isCustomerFound){
+        await Customers.findByIdAndRemove(req.params.id).exec();
+        res.json(message('Customer details was deleted', 0));
+    }else{
+        res.json(message('Customer details not found', 1));
+    }
+})
 
