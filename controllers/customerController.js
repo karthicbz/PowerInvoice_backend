@@ -60,5 +60,52 @@ exports.delete_customer_get = asynchandler(async(req, res)=>{
     }else{
         res.json(message('Customer details not found', 1));
     }
-})
+});
+
+exports.update_customer_post = [
+    body('companyname', 'Company name must be atleast 3 characters length')
+    .trim()
+    .isLength({min:3})
+    .escape(),
+    body('companyemail', 'must be a valid email')
+    .trim()
+    .isLength({min:5})
+    .isEmail(),
+    body('companyphone', 'must be a valid phone number')
+    .trim()
+    .isLength({min:10, max:10})
+    .escape(),
+    body('companygst', 'Must be a valid GST number')
+    .trim()
+    .isLength({min:15, max:15})
+    .escape(),
+    body('companyaddress', 'Must be a valid address')
+    .trim()
+    .isLength({min:10})
+    .escape(),
+
+    asynchandler(async(req, res)=>{
+        console.log(req.body);
+        const errors = validationResult(req);
+        const updateCustomer = new Customers({
+            name:req.body.companyname,
+            email: req.body.companyemail,
+            phNumber: req.body.companyphone,
+            gstNumber: req.body.companygst,
+            address: req.body.companyaddress,
+            _id: req.params.id,
+        });
+        if(!errors.isEmpty){
+            res.json(message(errors, 1));
+        }else{
+            const isCustomerFound = await Customers.findById(req.params.id).exec();
+            if(isCustomerFound){
+                await Customers.findByIdAndUpdate(req.params.id, updateCustomer).exec();
+                res.json(message('Customer details was updated', 0));
+            }else{
+                res.json(message('Customer not found', 1));
+            }
+        }
+    }),
+]
 
