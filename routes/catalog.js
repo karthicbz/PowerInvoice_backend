@@ -9,4 +9,6 @@ router.get('/customers/:id/delete', CustomerController.delete_customer_get);
 
 router.post('/customers/:id/update', CustomerController.update_customer_post);
 
+router.get('/customers/search', CustomerController.search_customers_get);
+
 module.exports = router;

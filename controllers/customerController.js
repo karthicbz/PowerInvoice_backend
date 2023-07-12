@@ -71,21 +71,20 @@ exports.update_customer_post = [
     .trim()
     .isLength({min:5})
     .isEmail(),
-    body('companyphone', 'must be a valid phone number')
+    body('companyphone', 'phone number must be 10 digit long')
     .trim()
     .isLength({min:10, max:10})
     .escape(),
-    body('companygst', 'Must be a valid GST number')
+    body('companygst', 'GST number must be 15 digits long')
     .trim()
     .isLength({min:15, max:15})
     .escape(),
     body('companyaddress', 'Must be a valid address')
     .trim()
-    .isLength({min:10})
-    .escape(),
+    .isLength({min:10}),
 
     asynchandler(async(req, res)=>{
-        console.log(req.body);
+        // console.log(req.body);
         const errors = validationResult(req);
         const updateCustomer = new Customers({
             name:req.body.companyname,
@@ -95,7 +94,7 @@ exports.update_customer_post = [
             address: req.body.companyaddress,
             _id: req.params.id,
         });
-        if(!errors.isEmpty){
+        if(!errors.isEmpty()){
             res.json(message(errors, 1));
         }else{
             const isCustomerFound = await Customers.findById(req.params.id).exec();
@@ -107,5 +106,11 @@ exports.update_customer_post = [
             }
         }
     }),
-]
+];
+
+exports.search_customers_get = asynchandler(async(req, res)=>{
+    const {text} = req.query;
+    const searchResult = await Customers.find({name:{$regex:text, $options:"i"}}).exec();
+    res.json(searchResult);
+});
 
